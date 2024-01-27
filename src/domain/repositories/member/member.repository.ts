@@ -3,6 +3,8 @@ import { MemberRepositoryInterface } from './member.repository.interface';
 import { Member } from '../../entities/member';
 import { PrismaClient } from '@prisma/client';
 import { CREATION_FAILED } from '../../../common/contants/failed';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { EMAIL_ALREADY_EXIST } from '../../../common/contants/already_exist';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class MemberRepository implements MemberRepositoryInterface {
@@ -21,6 +23,12 @@ export class MemberRepository implements MemberRepositoryInterface {
         member.isAdmin,
       );
     } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new Error(EMAIL_ALREADY_EXIST);
+      }
       throw error;
     }
   }

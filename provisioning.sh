@@ -38,3 +38,4 @@ echo "DATABASE_URL="postgresql://$DB_NAME:$DB_PASS@localhost:5432/$DB_NAME"" >$D
 
 npm ci
 npx prisma migrate dev --name init
+npm run test

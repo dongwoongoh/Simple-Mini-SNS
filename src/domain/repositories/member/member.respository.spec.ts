@@ -2,6 +2,8 @@ import { PrismaClient } from '@prisma/client';
 import { MemberRepository } from './member.repository';
 import { Member } from '../../entities/member';
 import { CREATION_FAILED } from '../../../common/contants/failed';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { EMAIL_ALREADY_EXIST } from '../../../common/contants/already_exist';
 
 jest.mock('@prisma/client', () => {
   const originalModule = jest.requireActual('@prisma/client');
@@ -69,7 +71,10 @@ describe('MemberRepository', () => {
   });
 
   it('should fail to create a new member due to duplicate email', async () => {
-    const duplicateEmailError = new Error(CREATION_FAILED);
+    const duplicateEmailError = new PrismaClientKnownRequestError(
+      EMAIL_ALREADY_EXIST,
+      { code: 'P2002', clientVersion: '0.01' },
+    );
 
     jest
       .mocked(prismaClientMock.members.create)
