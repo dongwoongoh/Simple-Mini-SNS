@@ -4,5 +4,5 @@ export interface AuthServiceInterface {
   readonly login: (
     email: string,
     password: string,
-  ) => Promise<{ member: Member; access_token: string; refresh_token }>;
+  ) => Promise<{ member: Member; access_token: string; refresh_token: string }>;
 }
