@@ -1,8 +1,8 @@
 import { Inject, Injectable, Scope } from '@nestjs/common';
-import { EMAIL_ALREADY_EXIST } from 'src/common/contants/already_exist';
-import { Member } from 'src/domain/entities/member';
+import { EMAIL_ALREADY_EXIST } from '@/common/contants/already_exist';
 import { MemberServiceInterface } from './member.service.interface';
-import { MemberRepositoryInterface } from 'src/domain/repositories/member/member.repository.interface';
+import { MemberRepositoryInterface } from '@/domain/repositories/member/member.repository.interface';
+import { Member } from '@/domain/entities/member';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class MemberService implements MemberServiceInterface {
