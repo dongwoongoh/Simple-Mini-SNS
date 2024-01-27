@@ -1,9 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import { MemberRepository } from './member.repository';
-import { Member } from '../../entities/member';
-import { CREATION_FAILED } from '../../../common/contants/failed';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { EMAIL_ALREADY_EXIST } from '../../../common/contants/already_exist';
+import { EMAIL_ALREADY_EXIST } from '@/common/contants/already_exist';
+import { Member } from '@/domain/entities/member';
+import { CREATION_FAILED } from '@/common/contants/failed';
 
 jest.mock('@prisma/client', () => {
   const originalModule = jest.requireActual('@prisma/client');

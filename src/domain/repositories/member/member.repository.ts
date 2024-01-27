@@ -1,14 +1,14 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Inject, Injectable, Scope } from '@nestjs/common';
 import { MemberRepositoryInterface } from './member.repository.interface';
-import { Member } from '../../entities/member';
 import { PrismaClient } from '@prisma/client';
-import { CREATION_FAILED } from '../../../common/contants/failed';
+import { CREATION_FAILED } from '@/common/contants/failed';
+import { Member } from '@/domain/entities/member';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { EMAIL_ALREADY_EXIST } from '../../../common/contants/already_exist';
+import { EMAIL_ALREADY_EXIST } from '@/common/contants/already_exist';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class MemberRepository implements MemberRepositoryInterface {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(@Inject(PrismaClient) private readonly prisma: PrismaClient) {}
 
   public async createUser(email: string, password: string, isAdmin: boolean) {
     try {

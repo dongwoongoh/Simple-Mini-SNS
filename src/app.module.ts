@@ -5,11 +5,5 @@ import { MemberRepository } from './domain/repositories/member/member.repository
 @Module({
   imports: [MemberModule],
   controllers: [],
-  providers: [
-    {
-      provide: 'MEMBER_REPOSITROY',
-      useClass: MemberRepository,
-    },
-  ],
 })
 export class AppModule {}
