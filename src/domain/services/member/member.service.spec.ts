@@ -25,13 +25,13 @@ describe('MemberService', () => {
     service = module.get<MemberService>(MemberService);
     mockMemberRepository = module.get('MEMBER_REPOSITROY');
   });
+  const memberData = {
+    email: 'test@example.com',
+    password: 'password123',
+    isAdmin: false,
+  };
 
   it('should create a new member', async () => {
-    const memberData = {
-      email: 'test@example.com',
-      password: 'password123',
-      isAdmin: false,
-    };
     jest.mocked(mockMemberRepository.findUserByEmail).mockResolvedValue(null);
     jest
       .mocked(mockMemberRepository.createUser)
@@ -69,11 +69,20 @@ describe('MemberService', () => {
     jest
       .mocked(mockMemberRepository.findUserByEmail)
       .mockResolvedValue(
-        new Member('1', 'test@example.com', 'password123', false),
+        new Member(
+          '1',
+          memberData.email,
+          memberData.password,
+          memberData.isAdmin,
+        ),
       );
 
     await expect(
-      service.createMember('test@example.com', 'password123', false),
+      service.createMember(
+        memberData.email,
+        memberData.password,
+        memberData.isAdmin,
+      ),
     ).rejects.toThrow(EMAIL_ALREADY_EXIST);
   });
 });

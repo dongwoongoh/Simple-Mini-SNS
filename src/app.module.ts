@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MemberModule } from './member.module';
-import { MemberRepository } from './domain/repositories/member/member.repository';
+import { EnvironmentModule } from './config/environment.module';
 
 @Module({
-  imports: [MemberModule],
+  imports: [EnvironmentModule, MemberModule],
   controllers: [],
 })
 export class AppModule {}
