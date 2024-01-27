@@ -2,6 +2,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { MemberRepository } from '@/domain/repositories/member/member.repository';
 import { ConfigService } from '@nestjs/config';
 import { Member } from '@/domain/entities/member';
+import { INVALID_TOKEN } from '@/common/contants/invalid';
 
 describe('JwtStrategy', () => {
   let jwtStrategy: JwtStrategy;
@@ -34,9 +35,8 @@ describe('JwtStrategy', () => {
     it('should throw an error for invalid payload', async () => {
       const payload = { email: 'wrong@example.com' };
       mockMemberRepository.findUserByEmail.mockResolvedValue(null);
-
       await expect(jwtStrategy.validate(payload)).rejects.toThrow(
-        'Invalid token',
+        INVALID_TOKEN,
       );
     });
   });

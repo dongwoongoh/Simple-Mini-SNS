@@ -4,6 +4,7 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { MemberRepository } from '@/domain/repositories/member/member.repository';
 import { Member } from '@/domain/entities/member';
+import { INVALID_TOKEN } from '@/common/contants/invalid';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -21,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: { email: string }): Promise<Member> {
     const email = payload.email;
     const member = await this.memberRepository.findUserByEmail(email);
-    if (!member) throw new Error('Invalid token');
+    if (!member) throw new Error(INVALID_TOKEN);
     const { fields } = member;
     return new Member(fields.id, fields.email, fields.password, fields.isAdmin);
   }
