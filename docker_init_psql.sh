@@ -3,19 +3,18 @@
 echo "Enter database name:"
 read DB_NAME
 
-echo "Enter database user name:"
-read DB_USER
-
 echo "Enter database user password:"
 read DB_PASS
 
 INIT_SQL="/tmp/init.sql"
 DOT_ENV="./.env"
 
+rm -rf $INIT_SQL
+
 if [ ! -f "$INIT_SQL" ]; then
     echo "Creating init.sql..."
     echo "CREATE DATABASE $DB_NAME;" >$INIT_SQL
-    echo "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;" >>$INIT_SQL
+    echo "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_NAME;" >>$INIT_SQL
 else
     echo "init.sql already exists."
 fi
@@ -27,11 +26,11 @@ else
     echo "Postgres image found."
 fi
 
-docker run -d \
-    -e POSTGRES_USER=$DB_USER \
+docker run -itd \
+    -e POSTGRES_USER=$DB_NAME \
     -e POSTGRES_PASSWORD=$DB_PASS \
-    -v $INIT_SQL:/docker-entrypoint-initdb.d/init.sql \
+    -e POSTGRES_DB=$DB_NAME \
     --name $DB_NAME \
     postgres:14.10-alpine3.18
 
-echo "DATABASE_URL="postgresql://$DB_USER:$DB_PASS@localhost:5432/$DB_NAME"" >$DOT_ENV
+echo "DATABASE_URL="postgresql://$DB_NAME:$DB_PASS@localhost:5432/$DB_NAME"" >$DOT_ENV
