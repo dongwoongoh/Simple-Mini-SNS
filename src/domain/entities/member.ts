@@ -5,4 +5,13 @@ export class Member {
     private readonly password: string,
     private readonly isAdmin: boolean,
   ) {}
+
+  public get fields() {
+    return {
+      id: this.id,
+      email: this.email,
+      password: this.password,
+      isAdmin: this.isAdmin,
+    };
+  }
 }
