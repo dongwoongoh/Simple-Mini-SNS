@@ -30,7 +30,11 @@ docker run -itd \
     -e POSTGRES_USER=$DB_NAME \
     -e POSTGRES_PASSWORD=$DB_PASS \
     -e POSTGRES_DB=$DB_NAME \
+    -p 5432:5432 \
     --name $DB_NAME \
     postgres:14.10-alpine3.18
 
 echo "DATABASE_URL="postgresql://$DB_NAME:$DB_PASS@localhost:5432/$DB_NAME"" >$DOT_ENV
+
+npm ci
+npx prisma migrate dev --name init
