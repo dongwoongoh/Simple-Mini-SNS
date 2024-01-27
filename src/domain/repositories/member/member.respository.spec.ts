@@ -14,6 +14,7 @@ jest.mock('@prisma/client', () => {
     PrismaClient: jest.fn().mockImplementation(() => ({
       members: {
         create: jest.fn(),
+        findUnique: jest.fn(),
       },
       $transaction: jest.fn(),
     })),
@@ -87,5 +88,43 @@ describe('MemberRepository', () => {
         memberData.isAdmin,
       ),
     ).rejects.toThrow(CREATION_FAILED);
+  });
+
+  it('should find a member by email', async () => {
+    const memberData = {
+      id: '1',
+      email: 'test@example.com',
+      password: 'password123',
+      isAdmin: false,
+    };
+
+    jest
+      .mocked(prismaClientMock.members.findUnique)
+      .mockResolvedValue(memberData);
+
+    const result = await repository.findUserByEmail('test@example.com');
+
+    expect(result).toEqual(
+      new Member(
+        memberData.id,
+        memberData.email,
+        memberData.password,
+        memberData.isAdmin,
+      ),
+    );
+    expect(prismaClientMock.members.findUnique).toHaveBeenCalledWith({
+      where: { email: 'test@example.com' },
+    });
+  });
+
+  it('should return null if member is not found', async () => {
+    jest.mocked(prismaClientMock.members.findUnique).mockResolvedValue(null);
+
+    const result = await repository.findUserByEmail('nonexistent@example.com');
+
+    expect(result).toBeNull();
+    expect(prismaClientMock.members.findUnique).toHaveBeenCalledWith({
+      where: { email: 'nonexistent@example.com' },
+    });
   });
 });

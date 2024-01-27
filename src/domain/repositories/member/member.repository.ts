@@ -15,7 +15,9 @@ export class MemberRepository implements MemberRepositoryInterface {
       const transaction = await this.prisma.$transaction(async (tx) => {
         return await tx.members.create({ data: { email, password, isAdmin } });
       });
+
       if (!transaction) throw new Error(CREATION_FAILED);
+
       return new Member(
         transaction.id,
         transaction.email,
@@ -32,8 +34,20 @@ export class MemberRepository implements MemberRepositoryInterface {
           clientVersion: '0.01',
         });
       }
+
       throw error;
     }
   }
-  findUserByEmail: (email: string) => Promise<Member>;
+
+  public async findUserByEmail(email: string): Promise<Member | null> {
+    const member = await this.prisma.members.findUnique({
+      where: { email },
+    });
+
+    if (!member) {
+      return null;
+    }
+
+    return new Member(member.id, member.email, member.password, member.isAdmin);
+  }
 }
