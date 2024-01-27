@@ -12,22 +12,25 @@ export class MemberRepository implements MemberRepositoryInterface {
 
   public async createUser(email: string, password: string, isAdmin: boolean) {
     try {
-      const member = await this.prisma.$transaction(async (tx) => {
+      const transaction = await this.prisma.$transaction(async (tx) => {
         return await tx.members.create({ data: { email, password, isAdmin } });
       });
-      if (!member) throw new Error(CREATION_FAILED);
+      if (!transaction) throw new Error(CREATION_FAILED);
       return new Member(
-        member.id,
-        member.email,
-        member.password,
-        member.isAdmin,
+        transaction.id,
+        transaction.email,
+        transaction.password,
+        transaction.isAdmin,
       );
     } catch (error) {
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === 'P2002'
       ) {
-        throw new Error(EMAIL_ALREADY_EXIST);
+        throw new PrismaClientKnownRequestError(EMAIL_ALREADY_EXIST, {
+          code: 'P2002',
+          clientVersion: '0.01',
+        });
       }
       throw error;
     }
