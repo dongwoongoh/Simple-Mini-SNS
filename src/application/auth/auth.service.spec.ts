@@ -22,18 +22,18 @@ describe('AuthService', () => {
 
   describe('login', () => {
     const member = new Member('1', 'test@example.com', 'hashedpassword', false);
+    const { email, password } = member.fields;
     it('should return tokens and member data on successful login', async () => {
       mockMemberRepository.findUserByEmail.mockResolvedValue(member);
       mockJwtService.signAsync.mockResolvedValue('token');
 
-      const result = await authService.login('test@example.com', 'password');
+      const result = await authService.login(email, password);
       expect(result).toHaveProperty('access_token');
       expect(result).toHaveProperty('refresh_token');
       expect(result.member).toBeInstanceOf(Member);
     });
 
     it('should return null for invalid credentials', async () => {
-      const { email, password } = member.fields;
       mockMemberRepository.findUserByEmail.mockResolvedValue(null);
       const result = await authService.login(email, password);
       expect(result).toBeNull();
