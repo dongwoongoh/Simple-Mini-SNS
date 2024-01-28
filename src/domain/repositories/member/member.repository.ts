@@ -25,14 +25,8 @@ export class MemberRepository implements MemberRepositoryInterface {
         transaction.isAdmin,
       );
     } catch (error) {
-      if (
-        error instanceof PrismaClientKnownRequestError &&
-        error.code === 'P2002'
-      ) {
-        throw new PrismaClientKnownRequestError(EMAIL_ALREADY_EXIST, {
-          code: 'P2002',
-          clientVersion: '0.01',
-        });
+      if (error instanceof PrismaClientKnownRequestError) {
+        throw new Error(EMAIL_ALREADY_EXIST);
       }
 
       throw error;

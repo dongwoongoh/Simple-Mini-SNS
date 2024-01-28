@@ -23,4 +23,28 @@ export class HeartRepository implements HeartRepositoryInterface {
       throw error;
     }
   }
+
+  public async rechargeBonusHearts(
+    memberId: string,
+    quantity: number,
+    expiryDate: Date,
+  ): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      try {
+        await tx.hearts.create({
+          data: {
+            memberId,
+            quantity,
+            expiryDate,
+            type: 'bonus',
+          },
+        });
+      } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+          throw new Error(DATABASE_ERROR);
+        }
+        throw error;
+      }
+    });
+  }
 }

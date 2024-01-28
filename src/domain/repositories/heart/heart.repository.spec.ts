@@ -8,7 +8,9 @@ jest.mock('@/infrastructure/database/prisma.service', () => ({
   PrismaService: jest.fn().mockImplementation(() => ({
     hearts: {
       aggregate: jest.fn(),
+      create: jest.fn(),
     },
+    $transaction: jest.fn(),
   })),
 }));
 
@@ -67,6 +69,55 @@ describe('HeartRepository', () => {
       await expect(heartRepository.getTotalHearts(memberId)).rejects.toThrow(
         DATABASE_ERROR,
       );
+    });
+  });
+
+  describe('rechargeBonusHearts', () => {
+    it('should successfully recharge bonus hearts', async () => {
+      const memberId = 'member-id';
+      const quantity = 10;
+      const expiryDate = new Date();
+
+      jest
+        .mocked(mockPrismaService.$transaction)
+        .mockImplementation(async (cb) => cb(mockPrismaService));
+
+      jest.mocked(mockPrismaService.hearts.create).mockResolvedValue({
+        id: 'heart-id',
+        memberId,
+        quantity,
+        expiryDate,
+        type: 'bonus',
+        chargedAt: new Date(),
+      });
+
+      await heartRepository.rechargeBonusHearts(memberId, quantity, expiryDate);
+
+      expect(mockPrismaService.hearts.create).toHaveBeenCalledWith({
+        data: {
+          memberId,
+          quantity,
+          expiryDate,
+          type: 'bonus',
+        },
+      });
+    });
+
+    it('should throw an error on database failure', async () => {
+      const memberId = 'member-id';
+      const quantity = 10;
+      const expiryDate = new Date();
+
+      jest
+        .mocked(mockPrismaService.$transaction)
+        .mockImplementation(async (cb) => cb(mockPrismaService));
+      jest
+        .mocked(mockPrismaService.hearts.create)
+        .mockRejectedValue(new Error(DATABASE_ERROR));
+
+      await expect(
+        heartRepository.rechargeBonusHearts(memberId, quantity, expiryDate),
+      ).rejects.toThrow(DATABASE_ERROR);
     });
   });
 });

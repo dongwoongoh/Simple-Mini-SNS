@@ -120,10 +120,10 @@ describe('AppController (e2e)', () => {
 
   describe('GET /hearts', () => {
     const resource = '/hearts';
-    it('200', async () => {
-      const response = await request(app.getHttpServer()).get(
-        `${resource}/${member.fields.id}`,
-      );
+    it('200 init value 0', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`${resource}/${member.fields.id}`)
+        .expect(200);
       const { totalHearts } = response.body;
       expect(totalHearts).toStrictEqual(0);
     });
