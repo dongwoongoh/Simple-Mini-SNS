@@ -6,4 +6,6 @@ export interface MemberServiceInterface {
     password: string,
     isAdmin: boolean,
   ) => Promise<Member>;
+
+  readonly login: (email: string, password: string) => Promise<Member>;
 }

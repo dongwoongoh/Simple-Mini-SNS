@@ -10,6 +10,7 @@ import { CreateMemberDto } from '@/presentation/dtos/create.member.dto';
 import { AppModule } from '@/app.module';
 import { PrismaService } from '@/infrastructure/database/prisma.service';
 import { Member } from '@/domain/entities/member';
+import { LoginMemberDto } from '@/presentation/dtos/login.member.dto';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -89,6 +90,34 @@ describe('AppController (e2e)', () => {
         message: 'email',
         error: 'Conflict',
       });
+    });
+  });
+
+  describe('POST /members/login', () => {
+    const resource = '/members/login';
+    const data: LoginMemberDto = {
+      email: req.email,
+      password: req.password,
+    };
+    it('201', async () => {
+      const response = await request(app.getHttpServer())
+        .post(resource)
+        .send(data)
+        .expect(201);
+      const { email } = response.body;
+      expect(email).toStrictEqual(data.email);
+    });
+    it('422', async () => {
+      const data: LoginMemberDto = {
+        email: req.email,
+        password: 'req.password',
+      };
+      const response = await request(app.getHttpServer())
+        .post(resource)
+        .send(data)
+        .expect(422);
+      const { email } = response.body;
+      expect(email).toStrictEqual(data.email);
     });
   });
 });
