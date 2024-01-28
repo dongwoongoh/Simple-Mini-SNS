@@ -1,5 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import {
+  BadRequestException,
+  INestApplication,
+  UnprocessableEntityException,
+  ValidationPipe,
+} from '@nestjs/common';
 import * as request from 'supertest';
 import { CreateMemberDto } from '@/presentation/dtos/create.member.dto';
 import { AppModule } from '@/app.module';
@@ -22,6 +27,23 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(
+      new ValidationPipe({
+        exceptionFactory: (errors) => {
+          const isMissingFields = errors.some((error) =>
+            Object.values(error.constraints).some((constraint) =>
+              constraint.includes('should not be empty'),
+            ),
+          );
+
+          if (isMissingFields) {
+            return new BadRequestException(errors);
+          } else {
+            return new UnprocessableEntityException(errors);
+          }
+        },
+      }),
+    );
     prismaService = app.get<PrismaService>(PrismaService);
 
     await app.init();
@@ -35,9 +57,20 @@ describe('AppController (e2e)', () => {
     });
   });
 
-  describe('Member', () => {
+  describe('POST /members', () => {
     const resource = '/members';
-    it('POST /members - success', async () => {
+    it('422', async () => {
+      const silly_form: CreateMemberDto = {
+        email: 'integral@gmail.com',
+        password: '12345',
+        isAdmin: true,
+      };
+      await request(app.getHttpServer())
+        .post(resource)
+        .send(silly_form)
+        .expect(422);
+    });
+    it('201', async () => {
       const response = await request(app.getHttpServer())
         .post(resource)
         .send(req)
@@ -46,8 +79,16 @@ describe('AppController (e2e)', () => {
       const member = new Member('1', req.email, req.password, req.isAdmin);
       expect(member.fields.email).toEqual(email);
     });
-    it('409', () => {
-      return request(app.getHttpServer()).post(resource).send(req).expect(409);
+    it('409', async () => {
+      const response = await request(app.getHttpServer())
+        .post(resource)
+        .send(req)
+        .expect(409);
+      expect(response.body).toStrictEqual({
+        statusCode: 409,
+        message: 'email',
+        error: 'Conflict',
+      });
     });
   });
 });

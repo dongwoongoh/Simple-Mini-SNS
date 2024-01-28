@@ -4,7 +4,9 @@ import {
   ConflictException,
   Controller,
   Inject,
+  InternalServerErrorException,
   Post,
+  UnprocessableEntityException,
   UseInterceptors,
 } from '@nestjs/common';
 import { CreateMemberDto } from '../dtos/create.member.dto';
@@ -12,14 +14,14 @@ import { EMAIL_ALREADY_EXIST } from '@/common/contants/already_exist';
 import { MemberInterceptor } from '@/infrastructure/interceptors/member.interceptor';
 
 @Controller('members')
-@UseInterceptors(MemberInterceptor)
+@UseInterceptors(new MemberInterceptor())
 export class MemberController {
   constructor(
     @Inject('MEMBER_SERVICE') private readonly service: MemberServiceInterface,
   ) {}
 
   @Post()
-  async createMember(@Body() createMemberDto: CreateMemberDto) {
+  public async createMember(@Body() createMemberDto: CreateMemberDto) {
     const { email, password, isAdmin } = createMemberDto;
     try {
       const member = await this.service.createMember(email, password, isAdmin);
@@ -27,6 +29,10 @@ export class MemberController {
     } catch (error) {
       if (error instanceof Error && error.message === EMAIL_ALREADY_EXIST) {
         throw new ConflictException('email');
+      } else if (error instanceof UnprocessableEntityException) {
+        throw new UnprocessableEntityException();
+      } else {
+        throw new InternalServerErrorException();
       }
     }
   }

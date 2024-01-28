@@ -3,11 +3,10 @@ import { MemberRepository } from './domain/repositories/member/member.repository
 import { MemberService } from './domain/services/member/member.service';
 import { PrismaClient } from '@prisma/client';
 import { MemberController } from './presentation/member/member.controller';
-import { ProfileController } from './presentation/profile/profile.controller';
 
 @Module({
   imports: [],
-  controllers: [MemberController, ProfileController],
+  controllers: [MemberController],
   providers: [
     {
       provide: 'MEMBER_REPOSITROY',
