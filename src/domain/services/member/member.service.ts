@@ -8,7 +8,6 @@ export class MemberService implements MemberServiceInterface {
         @Inject('MEMBER_REPOSITORY')
         private readonly repository: MemberRepositoryInterface,
     ) {}
-
     public async join(email: string, password: string, isAdmin: boolean) {
         try {
             return await this.repository.create(email, password, isAdmin);

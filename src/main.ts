@@ -1,31 +1,25 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import {
-    BadRequestException,
-    UnprocessableEntityException,
-    ValidationPipe,
-} from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.enableCors();
     app.useGlobalPipes(
         new ValidationPipe({
-            exceptionFactory: (errors) => {
-                const isMissingFields = errors.some((error) =>
-                    Object.values(error.constraints).some((constraint) =>
-                        constraint.includes('should not be empty'),
-                    ),
-                );
-
-                if (isMissingFields) {
-                    return new BadRequestException(errors);
-                } else {
-                    return new UnprocessableEntityException(errors);
-                }
-            },
+            transform: true,
         }),
     );
-    await app.listen(3000);
+    const config = new DocumentBuilder()
+        .setTitle('Thinksflow')
+        .setDescription('The Thinksflow API description')
+        .setVersion('1.0')
+        .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
+    await app.listen(3000, () =>
+        console.log('api docs: http://localhost:3000/api'),
+    );
 }
 bootstrap();
