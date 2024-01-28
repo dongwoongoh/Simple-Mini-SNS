@@ -35,6 +35,8 @@ docker run -itd \
     postgres:14.10-alpine3.18
 
 echo "DATABASE_URL="postgresql://$DB_NAME:$DB_PASS@localhost:5432/$DB_NAME"" >$DOT_ENV
+echo "JWT_SECRET="randomkeygen256bit"" >>$DOT_ENV
+echo "TOKEN_EXPIRES_IN="1d"" >>$DOT_ENV
 
 npm ci
 npx prisma migrate dev --name init
