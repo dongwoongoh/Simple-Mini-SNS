@@ -12,5 +12,18 @@ model Members {
   email     String   @unique
   password  String
   isAdmin   Boolean  @default(false) @map("is_admin")
+  hearts  Hearts[]
   @@map("members")
+}
+
+model Hearts {
+  id         String   @id @default(uuid())
+  memberId   String
+  type       String
+  quantity   Int
+  expiryDate DateTime?
+  chargedAt  DateTime @default(now())
+
+  member     Members   @relation(fields: [memberId], references: [id])
+  @@map("hearts")
 }

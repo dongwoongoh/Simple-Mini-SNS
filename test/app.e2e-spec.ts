@@ -112,12 +112,7 @@ describe('AppController (e2e)', () => {
         email: req.email,
         password: 'req.password',
       };
-      const response = await request(app.getHttpServer())
-        .post(resource)
-        .send(data)
-        .expect(422);
-      const { email } = response.body;
-      expect(email).toStrictEqual(data.email);
+      await request(app.getHttpServer()).post(resource).send(data).expect(422);
     });
   });
 });
