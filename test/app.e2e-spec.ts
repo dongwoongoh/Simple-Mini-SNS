@@ -22,6 +22,8 @@ describe('AppController (e2e)', () => {
     isAdmin: false,
   };
 
+  let member: Member;
+
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -76,8 +78,8 @@ describe('AppController (e2e)', () => {
         .post(resource)
         .send(req)
         .expect(201);
-      const { email } = response.body;
-      const member = new Member('1', req.email, req.password, req.isAdmin);
+      const { id, email } = response.body;
+      member = new Member(id, req.email, req.password, req.isAdmin);
       expect(member.fields.email).toEqual(email);
     });
     it('409', async () => {
@@ -113,6 +115,17 @@ describe('AppController (e2e)', () => {
         password: 'req.password',
       };
       await request(app.getHttpServer()).post(resource).send(data).expect(422);
+    });
+  });
+
+  describe('GET /hearts', () => {
+    const resource = '/hearts';
+    it('200', async () => {
+      const response = await request(app.getHttpServer()).get(
+        `${resource}/${member.fields.id}`,
+      );
+      const { totalHearts } = response.body;
+      expect(totalHearts).toStrictEqual(0);
     });
   });
 });
