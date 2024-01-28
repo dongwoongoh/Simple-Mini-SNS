@@ -18,6 +18,7 @@ describe('HeartService', () => {
           provide: 'HEART_REPOSITORY',
           useValue: {
             getTotalHearts: jest.fn(),
+            rechargeBonusHearts: jest.fn(),
           },
         },
       ],
@@ -33,5 +34,23 @@ describe('HeartService', () => {
     expect(mockHeartRepository.getTotalHearts).toHaveBeenCalledWith(
       'member-id',
     );
+  });
+
+  describe('rechargeBonusHearts', () => {
+    it('should call repository to recharge bonus hearts', async () => {
+      const memberId = 'test-member-id';
+      const quantity = 5;
+      const expiryDate = new Date();
+
+      mockHeartRepository.rechargeBonusHearts.mockResolvedValueOnce();
+
+      await service.rechargeBonusHearts(memberId, quantity, expiryDate);
+
+      expect(mockHeartRepository.rechargeBonusHearts).toHaveBeenCalledWith(
+        memberId,
+        quantity,
+        expiryDate,
+      );
+    });
   });
 });

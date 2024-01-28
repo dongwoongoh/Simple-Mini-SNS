@@ -12,4 +12,16 @@ export class HeartService implements HeartServiceInterface {
   public async getTotalHearts(memberId: string) {
     return await this.heartRepository.getTotalHearts(memberId);
   }
+
+  public async rechargeBonusHearts(
+    memberId: string,
+    quantity: number,
+    expiryDate: Date,
+  ): Promise<void> {
+    return this.heartRepository.rechargeBonusHearts(
+      memberId,
+      quantity,
+      expiryDate,
+    );
+  }
 }
