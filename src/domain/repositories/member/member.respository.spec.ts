@@ -4,6 +4,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { EMAIL_ALREADY_EXIST } from '@/common/contants/already_exist';
 import { Member } from '@/domain/entities/member';
 import { CREATION_FAILED } from '@/common/contants/failed';
+import { MemberRepositoryInterface } from './member.repository.interface';
 
 jest.mock('@prisma/client', () => {
   const originalModule = jest.requireActual('@prisma/client');
@@ -22,7 +23,7 @@ jest.mock('@prisma/client', () => {
 });
 
 describe('MemberRepository', () => {
-  let repository: MemberRepository;
+  let repository: MemberRepositoryInterface;
   let prismaClientMock: PrismaClient;
 
   beforeEach(() => {

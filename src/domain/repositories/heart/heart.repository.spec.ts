@@ -2,6 +2,7 @@ import { PrismaService } from '@/infrastructure/database/prisma.service';
 import { jest } from '@jest/globals';
 import { HeartRepository } from './heart.repository';
 import { DATABASE_ERROR } from '@/common/contants/error';
+import { HeartRepositoryInterface } from './heart.repository.interface';
 
 jest.mock('@/infrastructure/database/prisma.service', () => ({
   PrismaService: jest.fn().mockImplementation(() => ({
@@ -12,7 +13,7 @@ jest.mock('@/infrastructure/database/prisma.service', () => ({
 }));
 
 describe('HeartRepository', () => {
-  let heartRepository: HeartRepository;
+  let heartRepository: HeartRepositoryInterface;
   let mockPrismaService: jest.Mocked<PrismaService>;
 
   beforeEach(() => {

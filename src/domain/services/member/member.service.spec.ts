@@ -4,9 +4,10 @@ import { MemberRepositoryInterface } from '@/domain/repositories/member/member.r
 import { Member } from '@/domain/entities/member';
 import { EMAIL_ALREADY_EXIST } from '@/common/contants/already_exist';
 import { NOT_FOUND_MEMBER } from '@/common/contants/not_found';
+import { MemberServiceInterface } from './member.service.interface';
 
 describe('MemberService', () => {
-  let service: MemberService;
+  let service: MemberServiceInterface;
   let mockMemberRepository: MemberRepositoryInterface;
 
   beforeEach(async () => {
@@ -23,7 +24,7 @@ describe('MemberService', () => {
       ],
     }).compile();
 
-    service = module.get<MemberService>(MemberService);
+    service = module.get<MemberServiceInterface>(MemberService);
     mockMemberRepository = module.get('MEMBER_REPOSITROY');
   });
   const memberData = {
