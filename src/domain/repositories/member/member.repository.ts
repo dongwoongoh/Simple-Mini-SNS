@@ -42,7 +42,12 @@ export class MemberRepository implements MemberRepositoryInterface {
                         clientVersion: '0.0.1',
                     },
                 );
-            return new Member(member.id, member.email, member.isAdmin);
+            return new Member(
+                member.id,
+                member.email,
+                member.isAdmin,
+                member.password,
+            );
         } catch (error) {
             if (
                 error instanceof Prisma.PrismaClientKnownRequestError &&

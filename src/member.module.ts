@@ -17,5 +17,11 @@ import { MemberHandler } from './presentation/handler/member.handler';
         },
         PrismaClient,
     ],
+    exports: [
+        {
+            provide: 'MEMBER_REPOSITORY',
+            useClass: MemberRepository,
+        },
+    ],
 })
 export class MemberModule {}
