@@ -33,7 +33,7 @@ export class AuthController {
                 email,
                 password,
             );
-            res.setHeader('Authorization', 'Bearer ' + access_token);
+            res.setHeader('Authorization', access_token);
             res.cookie('token', access_token, {
                 httpOnly: true,
                 maxAge: 60 * 60 * 24 * 1000,

@@ -8,11 +8,7 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.enableCors();
     app.use(cookieParser());
-    app.useGlobalPipes(
-        new ValidationPipe({
-            transform: true,
-        }),
-    );
+    app.useGlobalPipes(new ValidationPipe({ transform: true }));
     const config = new DocumentBuilder()
         .setTitle('Thinksflow')
         .setDescription('The Thinksflow API description')

@@ -5,7 +5,7 @@ import { IsEmail, IsString, Matches, MinLength } from 'class-validator';
 export class MemberJoinDto {
     @IsEmail()
     @ApiProperty()
-    public email: string;
+    public readonly email: string;
 
     @IsString()
     @MinLength(8)
@@ -13,9 +13,9 @@ export class MemberJoinDto {
         message: 'password must contain at least one special character',
     })
     @ApiProperty()
-    public password: string;
+    public readonly password: string;
 
     @ToBoolean()
     @ApiProperty()
-    public isAdmin: boolean;
+    public readonly isAdmin: boolean;
 }

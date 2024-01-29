@@ -7,7 +7,7 @@ import { Heart } from '@/domain/entities/heart';
 export class HeartService implements HeartServiceInterface {
     constructor(
         @Inject('HEART_REPOSITORY')
-        private heartRepository: HeartRepositoryInterface,
+        private readonly heartRepository: HeartRepositoryInterface,
     ) {}
     public async getTotalHearts(memberId: string): Promise<number> {
         return await this.heartRepository.getTotalHearts(memberId);

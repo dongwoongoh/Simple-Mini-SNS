@@ -4,5 +4,5 @@ import { IsUUID } from 'class-validator';
 export class HeartQuantityDto {
     @IsUUID()
     @ApiProperty()
-    public memberId: string;
+    public readonly memberId: string;
 }

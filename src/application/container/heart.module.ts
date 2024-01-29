@@ -2,6 +2,7 @@ import { HeartRepository } from '@/domain/repositories/heart/heart.repository';
 import { HeartService } from '@/domain/services/heart/heart.service';
 import { HeartController } from '@/presentation/handler/heart.handler';
 import { Module } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { PrismaClient } from '@prisma/client';
 
 @Module({
@@ -16,6 +17,7 @@ import { PrismaClient } from '@prisma/client';
             useClass: HeartService,
         },
         PrismaClient,
+        JwtService,
     ],
 })
 export class HeartModule {}

@@ -24,16 +24,17 @@ export class HeartRepository implements HeartRepositoryInterface {
         expiryDate: Date,
     ) {
         try {
-            const result = await this.prisma.$transaction(async (prisma) => {
-                return await prisma.hearts.create({
-                    data: {
-                        memberId,
-                        quantity,
-                        expiryDate,
-                        type: 'bonus',
-                    },
-                });
-            });
+            const result = await this.prisma.$transaction(
+                async (tx) =>
+                    await tx.hearts.create({
+                        data: {
+                            memberId,
+                            quantity,
+                            expiryDate,
+                            type: 'bonus',
+                        },
+                    }),
+            );
             return new Heart(
                 result.id,
                 result.memberId,
