@@ -11,4 +11,5 @@ export interface HeartServiceInterface {
         memberId: string,
         quantity: number,
     ) => Promise<Heart>;
+    readonly useHearts: (memberId: string, quantity: number) => Promise<void>;
 }

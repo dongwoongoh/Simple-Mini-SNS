@@ -5,14 +5,11 @@ import { AppModule } from '@/application/container/app.module';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import { MemberJoinDto } from '@/presentation/dtos/member/member.join.dto';
 import { Member } from '@/domain/entities/member';
-import { Heart } from '@/domain/entities/heart';
 
 describe('AppController (e2e)', () => {
     let app: INestApplication;
     let prismaService: PrismaService;
     let member: Member;
-    let heart: Heart;
-    let rMember: Member;
     beforeEach(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
@@ -27,14 +24,8 @@ describe('AppController (e2e)', () => {
         isAdmin: true,
     };
     afterAll(async () => {
-        await prismaService.hearts.deleteMany({
-            where: { id: heart.data.id },
-        });
         await prismaService.members.deleteMany({
             where: { email: gMember.email },
-        });
-        await prismaService.members.deleteMany({
-            where: { id: rMember.data.id },
         });
     });
     describe('POST /members', () => {
@@ -97,9 +88,14 @@ describe('AppController (e2e)', () => {
     describe('GET /hearts', () => {
         const resource = '/hearts';
         it('200', async () => {
+            const response = await request(app.getHttpServer())
+                .post('/auth')
+                .send(gMember)
+                .expect(201);
+            const cookies = response.headers['set-cookie'];
             await request(app.getHttpServer())
-                .get(`${resource}?memberId=${member.data.id}`)
-                .expect(200);
+                .get(resource)
+                .set('Cookie', cookies);
         });
     });
 });

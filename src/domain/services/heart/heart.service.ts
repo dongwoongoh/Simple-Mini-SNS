@@ -32,4 +32,7 @@ export class HeartService implements HeartServiceInterface {
             quantity,
         );
     }
+    public async useHearts(memberId: string, quantity: number): Promise<void> {
+        return await this.heartRepository.useHearts(memberId, quantity);
+    }
 }

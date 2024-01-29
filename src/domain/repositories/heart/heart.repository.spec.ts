@@ -9,6 +9,9 @@ jest.mock('@/infrastructure/prisma/prisma.service', () => ({
         hearts: {
             aggregate: jest.fn(),
             create: jest.fn(),
+            findMany: jest.fn(),
+            update: jest.fn(),
+            delete: jest.fn(),
         },
         $transaction: jest.fn(),
     })),
@@ -162,6 +165,72 @@ describe('HeartRepository', () => {
             await expect(
                 heartRepository.rechargeRegularHearts(memberId, quantity),
             ).rejects.toThrow(UNEXCEPTION_ERROR);
+        });
+    });
+    describe('useHearts', () => {
+        const memberId = 'member-id';
+        const currentDateTime = new Date();
+        it('should successfully use hearts when sufficient', async () => {
+            const quantityToUse = 15;
+            mockPrismaService.hearts.aggregate
+                .mockResolvedValueOnce({
+                    _sum: { quantity: 10 },
+                    _avg: {},
+                    _min: {},
+                    _max: {},
+                    _count: {},
+                })
+                .mockResolvedValueOnce({
+                    _sum: { quantity: 10 },
+                    _avg: {},
+                    _min: {},
+                    _max: {},
+                    _count: {},
+                });
+            mockPrismaService.hearts.findMany
+                .mockResolvedValueOnce([
+                    {
+                        id: '1',
+                        memberId: '1',
+                        quantity: 10,
+                        type: 'bonus',
+                        chargedAt: new Date(),
+                        expiryDate: new Date('2024-03-19'),
+                    },
+                ])
+                .mockResolvedValueOnce([
+                    {
+                        id: '2',
+                        memberId: '2',
+                        quantity: 10,
+                        type: 'regular',
+                        chargedAt: new Date(),
+                        expiryDate: null,
+                    },
+                ]);
+
+            await heartRepository.useHearts(memberId, quantityToUse);
+        });
+
+        it('should ignore expired bonus hearts', async () => {
+            const quantityToUse = 15;
+            mockPrismaService.hearts.aggregate
+                .mockResolvedValueOnce({
+                    _sum: { quantity: 0 },
+                    _avg: {},
+                    _min: {},
+                    _max: {},
+                    _count: {},
+                })
+                .mockResolvedValueOnce({
+                    _sum: { quantity: 10 },
+                    _avg: {},
+                    _min: {},
+                    _max: {},
+                    _count: {},
+                });
+
+            await heartRepository.useHearts(memberId, quantityToUse);
         });
     });
 });

@@ -1,3 +1,4 @@
+import { parseCookie } from '@/application/helper/parse.cookie';
 import {
     CanActivate,
     ExecutionContext,
@@ -16,7 +17,7 @@ export class AdminGuard implements CanActivate {
         context: ExecutionContext,
     ): boolean | Promise<boolean> | Observable<boolean> {
         const request = context.switchToHttp().getRequest() as Request;
-        const token = request.cookies['token'];
+        const token = parseCookie(request.headers.cookie)['token'];
         try {
             const decoded = this.service.verify(token, { secret: 'SECRET' });
             return decoded.isAdmin;

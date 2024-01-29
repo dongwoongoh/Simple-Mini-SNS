@@ -6,8 +6,9 @@ import {
     HttpException,
     Inject,
     InternalServerErrorException,
+    Patch,
     Post,
-    Query,
+    UnprocessableEntityException,
     UseGuards,
 } from '@nestjs/common';
 import { HeartQuantityDto } from '../dtos/heart/heart.quantity';
@@ -17,6 +18,7 @@ import { HeartRechargeBonusDto } from '../dtos/heart/heart.recharge.bonus.dto';
 import { HeartRechargeRegularDto } from '../dtos/heart/heart.recharge.regular.dto';
 import { MemberGuard } from '../guard/member.guard';
 import { MemberDecorator } from '../decorator/member.decorator';
+import { HeartUseDto } from '../dtos/heart/heart.use';
 
 @Controller('hearts')
 @ApiTags('Hearts')
@@ -26,8 +28,9 @@ export class HeartController {
         private readonly service: HeartServiceInterface,
     ) {}
     @Get()
-    @ApiOperation({ summary: 'my hearts quantity' })
-    private async hearts(@Query() { memberId }: HeartQuantityDto) {
+    @UseGuards(MemberGuard)
+    @ApiOperation({ summary: 'hearts quantity' })
+    private async hearts(@MemberDecorator() memberId: string) {
         try {
             const quantity = await this.service.getTotalHearts(memberId);
             return { quantity };
@@ -77,6 +80,25 @@ export class HeartController {
                 throw new InternalServerErrorException();
             } else if (error instanceof Error) {
                 throw new Error(error.message);
+            }
+        }
+    }
+    @Patch('/use')
+    @UseGuards(MemberGuard)
+    @ApiOperation({ summary: 'use hearts' })
+    @ApiConsumes('application/x-www-form-urlencoded')
+    @ApiBody({ type: HeartUseDto })
+    private async useHearts(
+        @MemberDecorator() memberId: string,
+        @Body() { quantity }: HeartUseDto,
+    ) {
+        try {
+            await this.service.useHearts(memberId, quantity);
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new UnprocessableEntityException('Insufficient hearts');
+            } else {
+                throw new InternalServerErrorException();
             }
         }
     }
