@@ -181,4 +181,37 @@ describe('AppController (e2e)', () => {
                 .expect(200);
         });
     });
+    describe('GET /hearts/history', () => {
+        const resource = '/hearts/history';
+        it('200', async () => {
+            const loginResponse = await request(app.getHttpServer())
+                .post('/auth')
+                .send(gMember)
+                .expect(201);
+            const cookies = loginResponse.headers['set-cookie'];
+            const { id: memberId } = loginResponse.body;
+            for (let i = 0; i < 3; i++) {
+                await request(app.getHttpServer())
+                    .post('/hearts/bonus')
+                    .set('Cookie', cookies)
+                    .send({
+                        memberId,
+                        quantity: 100,
+                        expiryDate: new Date('2024-12-31'),
+                    })
+                    .expect(201);
+
+                await request(app.getHttpServer())
+                    .post('/hearts/regular')
+                    .set('Cookie', cookies)
+                    .send({ memberId, quantity: 100 })
+                    .expect(201);
+            }
+            const historyResponse = await request(app.getHttpServer())
+                .get(resource)
+                .set('Cookie', cookies)
+                .expect(200);
+            expect(Array.isArray(historyResponse.body)).toBeTruthy();
+        });
+    });
 });

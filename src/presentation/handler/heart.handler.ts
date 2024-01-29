@@ -8,6 +8,7 @@ import {
     InternalServerErrorException,
     Patch,
     Post,
+    Query,
     UnprocessableEntityException,
     UseGuards,
 } from '@nestjs/common';
@@ -19,6 +20,7 @@ import { HeartRechargeRegularDto } from '../dtos/heart/heart.recharge.regular.dt
 import { MemberGuard } from '../guard/member.guard';
 import { MemberDecorator } from '../decorator/member.decorator';
 import { HeartUseDto } from '../dtos/heart/heart.use';
+import { HeartRechargeHistoryDto } from '../dtos/heart/heart.recharge.history.dto';
 
 @Controller('hearts')
 @ApiTags('Hearts')
@@ -97,6 +99,28 @@ export class HeartController {
         } catch (error) {
             if (error instanceof Error) {
                 throw new UnprocessableEntityException('Insufficient hearts');
+            } else {
+                throw new InternalServerErrorException();
+            }
+        }
+    }
+    @Get('/history')
+    @UseGuards(MemberGuard)
+    @ApiOperation({ summary: 'Get heart recharge history' })
+    private async rechargeHistory(
+        @MemberDecorator() memberId: string,
+        @Query() { limit, cursor }: HeartRechargeHistoryDto,
+    ) {
+        try {
+            const history = await this.service.getHeartRechargeHistory(
+                memberId,
+                cursor,
+                limit,
+            );
+            return history;
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new UnprocessableEntityException(error.message);
             } else {
                 throw new InternalServerErrorException();
             }
