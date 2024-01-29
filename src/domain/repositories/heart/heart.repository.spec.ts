@@ -116,4 +116,52 @@ describe('HeartRepository', () => {
             ).rejects.toThrow(UNEXCEPTION_ERROR);
         });
     });
+    describe('rechargeRegularHearts', () => {
+        const memberId = 'member-id';
+        const quantity = 20;
+        it('should successfully recharge regular hearts', async () => {
+            const expectedHeart = new Heart(
+                '200',
+                memberId,
+                'regular',
+                quantity,
+                new Date(),
+            );
+            jest.mocked(mockPrismaService.$transaction).mockImplementation(
+                async (cb) => cb(mockPrismaService),
+            );
+            jest.mocked(mockPrismaService.hearts.create).mockResolvedValue({
+                id: '200',
+                memberId: memberId,
+                type: 'regular',
+                quantity: quantity,
+                chargedAt: new Date(),
+                expiryDate: null,
+            });
+            const result = await heartRepository.rechargeRegularHearts(
+                memberId,
+                quantity,
+            );
+            expect(result).toEqual(expectedHeart);
+            expect(mockPrismaService.$transaction).toHaveBeenCalled();
+            expect(mockPrismaService.hearts.create).toHaveBeenCalledWith({
+                data: {
+                    memberId,
+                    quantity,
+                    type: 'regular',
+                },
+            });
+        });
+        it('should throw an error on database failure', async () => {
+            jest.mocked(mockPrismaService.$transaction).mockImplementation(
+                async (cb) => cb(mockPrismaService),
+            );
+            jest.mocked(mockPrismaService.hearts.create).mockRejectedValue(
+                new Error(UNEXCEPTION_ERROR),
+            );
+            await expect(
+                heartRepository.rechargeRegularHearts(memberId, quantity),
+            ).rejects.toThrow(UNEXCEPTION_ERROR);
+        });
+    });
 });

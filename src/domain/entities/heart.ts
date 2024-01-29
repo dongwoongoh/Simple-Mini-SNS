@@ -4,8 +4,8 @@ export class Heart {
         private readonly memberId: string,
         private readonly type: 'regular' | 'bonus',
         private readonly quantity: number,
-        private readonly chargedAt: Date,
-        private readonly expiryDate?: Date,
+        private readonly chargedAt?: Date,
+        private readonly expiryDate?: Date | null,
     ) {}
     public get data() {
         return {

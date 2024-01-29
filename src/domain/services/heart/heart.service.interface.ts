@@ -7,4 +7,8 @@ export interface HeartServiceInterface {
         quantity: number,
         expiryDate: Date,
     ) => Promise<Heart>;
+    readonly rechargeRegularHearts: (
+        memberId: string,
+        quantity: number,
+    ) => Promise<Heart>;
 }

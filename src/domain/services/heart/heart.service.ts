@@ -23,4 +23,13 @@ export class HeartService implements HeartServiceInterface {
             expiryDate,
         );
     }
+    public async rechargeRegularHearts(
+        memberId: string,
+        quantity: number,
+    ): Promise<Heart> {
+        return await this.heartRepository.rechargeRegularHearts(
+            memberId,
+            quantity,
+        );
+    }
 }

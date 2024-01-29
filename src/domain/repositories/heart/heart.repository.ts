@@ -47,4 +47,29 @@ export class HeartRepository implements HeartRepositoryInterface {
             throw new Error(UNEXCEPTION_ERROR);
         }
     }
+    public async rechargeRegularHearts(
+        memberId: string,
+        quantity: number,
+    ): Promise<Heart> {
+        try {
+            const result = await this.prisma.$transaction(async (prisma) => {
+                return await prisma.hearts.create({
+                    data: {
+                        memberId,
+                        quantity,
+                        type: 'regular',
+                    },
+                });
+            });
+            return new Heart(
+                result.id,
+                result.memberId,
+                result.type as 'regular',
+                result.quantity,
+                result.chargedAt,
+            );
+        } catch (error) {
+            throw new Error(UNEXCEPTION_ERROR);
+        }
+    }
 }
