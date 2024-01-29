@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { HeartRepositoryInterface } from '@/domain/repositories/heart/heart.repository.interface';
 import { HeartServiceInterface } from './heart.service.interface';
+import { Heart } from '@/domain/entities/heart';
 
 @Injectable()
 export class HeartService implements HeartServiceInterface {
@@ -8,7 +9,18 @@ export class HeartService implements HeartServiceInterface {
         @Inject('HEART_REPOSITORY')
         private heartRepository: HeartRepositoryInterface,
     ) {}
-    async getTotalHearts(memberId: string): Promise<number> {
+    public async getTotalHearts(memberId: string): Promise<number> {
         return await this.heartRepository.getTotalHearts(memberId);
+    }
+    public async rechargeBonusHearts(
+        memberId: string,
+        quantity: number,
+        expiryDate: Date,
+    ): Promise<Heart> {
+        return await this.heartRepository.rechargeBonusHearts(
+            memberId,
+            quantity,
+            expiryDate,
+        );
     }
 }

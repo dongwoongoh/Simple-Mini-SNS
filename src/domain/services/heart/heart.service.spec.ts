@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HeartService } from './heart.service';
 import { HeartRepositoryInterface } from '@/domain/repositories/heart/heart.repository.interface';
 import { jest } from '@jest/globals';
+import { Heart } from '@/domain/entities/heart';
 
 describe('HeartService', () => {
     let service: HeartService;
@@ -15,6 +16,7 @@ describe('HeartService', () => {
                     provide: 'HEART_REPOSITORY',
                     useValue: {
                         getTotalHearts: jest.fn(),
+                        rechargeBonusHearts: jest.fn(),
                     },
                 },
             ],
@@ -30,5 +32,33 @@ describe('HeartService', () => {
         expect(mockHeartRepository.getTotalHearts).toHaveBeenCalledWith(
             'member-id',
         );
+    });
+    it('should recharge bonus hearts', async () => {
+        const memberId = 'test-member-id';
+        const quantity = 5;
+        const expiryDate = new Date();
+        const expectedHeart = new Heart(
+            'heart-id',
+            memberId,
+            'bonus',
+            quantity,
+            new Date(),
+            expiryDate,
+        );
+        mockHeartRepository.rechargeBonusHearts.mockResolvedValue(
+            expectedHeart,
+        );
+        const result = await service.rechargeBonusHearts(
+            memberId,
+            quantity,
+            expiryDate,
+        );
+        expect(mockHeartRepository.rechargeBonusHearts).toHaveBeenCalledWith(
+            memberId,
+            quantity,
+            expiryDate,
+        );
+        expect(result).toEqual(expectedHeart);
+        expect(result.data.expiryDate).toEqual(expiryDate);
     });
 });
