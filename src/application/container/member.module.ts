@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { MemberRepository } from './domain/repositories/member/member.repository';
+import { MemberRepository } from '../../domain/repositories/member/member.repository';
 import { PrismaClient } from '@prisma/client';
-import { MemberService } from './domain/services/member/member.service';
-import { MemberHandler } from './presentation/handler/member.handler';
+import { MemberService } from '../../domain/services/member/member.service';
+import { MemberHandler } from '../../presentation/handler/member.handler';
 
 @Module({
     controllers: [MemberHandler],

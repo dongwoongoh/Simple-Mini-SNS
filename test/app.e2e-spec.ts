@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from '@/app.module';
+import { AppModule } from '@/application/container/app.module';
 import { PrismaService } from '@/infrastructure/prisma/prisma.service';
 import { MemberJoinDto } from '@/presentation/dtos/member/member.join.dto';
 import { Member } from '@/domain/entities/member';
@@ -83,6 +83,14 @@ describe('AppController (e2e)', () => {
                 message: 'email',
                 error: 'Not Found',
             });
+        });
+    });
+    describe('GET /hearts', () => {
+        const resource = '/hearts';
+        it('200', async () => {
+            await request(app.getHttpServer())
+                .get(`${resource}?memberId=${member.data.id}`)
+                .expect(200);
         });
     });
 });

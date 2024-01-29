@@ -1,4 +1,4 @@
-import { MemberModule } from '@/member.module';
+import { MemberModule } from '@/application/container/member.module';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
