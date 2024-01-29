@@ -20,7 +20,7 @@ export class MemberHandler {
         @Inject('MEMBER_SERVICE')
         private readonly service: MemberServiceInterface,
     ) {}
-    @Post('join')
+    @Post()
     @UseInterceptors(new MemberJoinInterceptor())
     @ApiOperation({ summary: 'create a new member' })
     @ApiConsumes('application/x-www-form-urlencoded')

@@ -32,7 +32,7 @@ describe('AppController (e2e)', () => {
         const resource = '/members';
         it('201', async () => {
             const response = await request(app.getHttpServer())
-                .post(`${resource}/join`)
+                .post(resource)
                 .send(gMember)
                 .expect(201);
             const { id, email } = response.body;
@@ -41,9 +41,24 @@ describe('AppController (e2e)', () => {
         });
         it('409', async () => {
             await request(app.getHttpServer())
-                .post(`${resource}/join`)
+                .post(resource)
                 .send(gMember)
                 .expect(409);
+        });
+    });
+    describe('POST /auth', () => {
+        const resource = '/auth';
+        it('201', async () => {
+            const response = await request(app.getHttpServer())
+                .post(resource)
+                .send(gMember)
+                .expect(201);
+            const body = response.body;
+            expect(body.id).toStrictEqual(member.data.id);
+            const cookies = response.headers['set-cookie'];
+            expect(cookies).toBeDefined();
+            expect(cookies[0]).toContain('token=');
+            expect(cookies[0]).toContain('HttpOnly');
         });
     });
 });
