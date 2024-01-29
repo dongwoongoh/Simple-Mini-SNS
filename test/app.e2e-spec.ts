@@ -60,5 +60,29 @@ describe('AppController (e2e)', () => {
             expect(cookies[0]).toContain('token=');
             expect(cookies[0]).toContain('HttpOnly');
         });
+        it('422', async () => {
+            const sillyPassword = '123456qwe!!!';
+            const response = await request(app.getHttpServer())
+                .post(resource)
+                .send({ ...gMember, password: sillyPassword })
+                .expect(422);
+            expect(response.body).toStrictEqual({
+                statusCode: 422,
+                message: 'password',
+                error: 'Unprocessable Entity',
+            });
+        });
+        it('404', async () => {
+            const sillyEmail = '123456qwe!!!';
+            const response = await request(app.getHttpServer())
+                .post(resource)
+                .send({ ...gMember, email: sillyEmail })
+                .expect(404);
+            expect(response.body).toStrictEqual({
+                statusCode: 404,
+                message: 'email',
+                error: 'Not Found',
+            });
+        });
     });
 });
