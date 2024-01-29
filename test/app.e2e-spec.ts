@@ -73,7 +73,7 @@ describe('AppController (e2e)', () => {
             });
         });
         it('404', async () => {
-            const sillyEmail = '123456qwe!!!';
+            const sillyEmail = '123456qwedz@gmail.com';
             const response = await request(app.getHttpServer())
                 .post(resource)
                 .send({ ...gMember, email: sillyEmail })
