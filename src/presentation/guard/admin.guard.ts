@@ -16,7 +16,7 @@ export class AdminGuard implements CanActivate {
         context: ExecutionContext,
     ): boolean | Promise<boolean> | Observable<boolean> {
         const request = context.switchToHttp().getRequest() as Request;
-        const token = request.headers.cookie;
+        const token = request.cookies['token'];
         try {
             const decoded = this.service.verify(token, { secret: 'SECRET' });
             return decoded.isAdmin;

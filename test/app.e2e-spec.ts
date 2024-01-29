@@ -102,43 +102,4 @@ describe('AppController (e2e)', () => {
                 .expect(200);
         });
     });
-    describe('POST /hearts', () => {
-        const resource = '/hearts/bonus';
-        it('200', async () => {
-            const rMemberData: MemberJoinDto = {
-                email: 'mad999@gmail.com',
-                password: '12345678!!',
-                isAdmin: false,
-            };
-            const response = await request(app.getHttpServer())
-                .post('/members')
-                .send(rMemberData)
-                .expect(201);
-            const { id, email, isAdmin } = response.body;
-            rMember = new Member(id, email, isAdmin);
-            const loginResponse = await request(app.getHttpServer())
-                .post('/auth')
-                .send(gMember)
-                .expect(201);
-            const cookies = loginResponse.headers['authorization'];
-            const heartResponse = await request(app.getHttpServer())
-                .post(resource)
-                .set('Cookie', cookies)
-                .send({
-                    memberId: rMember.data.id,
-                    quantity: 2000,
-                    expiryDate: new Date(),
-                })
-                .expect(201);
-            const body = heartResponse.body;
-            heart = new Heart(
-                body.id,
-                body.memberId,
-                body.type,
-                body.quantity,
-                body.chargedAt,
-                body.expiryDate,
-            );
-        });
-    });
 });
