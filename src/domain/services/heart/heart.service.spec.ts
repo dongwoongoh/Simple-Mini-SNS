@@ -17,11 +17,11 @@ describe('HeartService', () => {
                         getTotalHearts: jest.fn(),
                         rechargeBonusHearts: jest.fn(),
                         rechargeRegularHearts: jest.fn(),
+                        getHeartRechargeHistory: jest.fn(),
                     },
                 },
             ],
         }).compile();
-
         service = module.get<HeartService>(HeartService);
         mockHeartRepository = module.get('HEART_REPOSITORY');
     });
@@ -78,5 +78,57 @@ describe('HeartService', () => {
             quantity,
         );
         expect(result).toEqual(expectedHeart);
+    });
+    describe('getHeartRechargeHistory', () => {
+        it('should retrieve heart recharge history', async () => {
+            const memberId = 'test-member-id';
+            const mockHistory = [
+                new Heart(
+                    'heart1',
+                    memberId,
+                    'bonus',
+                    5,
+                    new Date(),
+                    new Date(),
+                ),
+                new Heart('heart2', memberId, 'regular', 10),
+            ];
+            mockHeartRepository.getHeartRechargeHistory.mockResolvedValue(
+                mockHistory,
+            );
+            const result = await service.getHeartRechargeHistory(memberId);
+            expect(result).toEqual(mockHistory);
+            expect(
+                mockHeartRepository.getHeartRechargeHistory,
+            ).toHaveBeenCalledWith(memberId, undefined, 10);
+        });
+        it('should handle pagination in heart recharge history', async () => {
+            const memberId = 'test-member-id';
+            const cursor = 'heart1';
+            const limit = 5;
+            const mockHistory = [
+                new Heart('heart2', memberId, 'regular', 10),
+                new Heart(
+                    'heart3',
+                    memberId,
+                    'bonus',
+                    20,
+                    new Date(),
+                    new Date(),
+                ),
+            ];
+            mockHeartRepository.getHeartRechargeHistory.mockResolvedValue(
+                mockHistory,
+            );
+            const result = await service.getHeartRechargeHistory(
+                memberId,
+                cursor,
+                limit,
+            );
+            expect(result).toEqual(mockHistory);
+            expect(
+                mockHeartRepository.getHeartRechargeHistory,
+            ).toHaveBeenCalledWith(memberId, cursor, limit);
+        });
     });
 });

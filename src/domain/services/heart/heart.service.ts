@@ -35,4 +35,15 @@ export class HeartService implements HeartServiceInterface {
     public async useHearts(memberId: string, quantity: number): Promise<void> {
         return await this.heartRepository.useHearts(memberId, quantity);
     }
+    public async getHeartRechargeHistory(
+        memberId: string,
+        cursor?: string,
+        limit: number = 10,
+    ): Promise<Heart[]> {
+        return await this.heartRepository.getHeartRechargeHistory(
+            memberId,
+            cursor,
+            limit,
+        );
+    }
 }

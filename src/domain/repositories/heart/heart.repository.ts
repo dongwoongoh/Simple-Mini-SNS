@@ -188,4 +188,40 @@ export class HeartRepository implements HeartRepositoryInterface {
             }
         }
     }
+    public async getHeartRechargeHistory(
+        memberId: string,
+        cursorId?: string,
+        limit: number = 10,
+    ): Promise<Heart[]> {
+        try {
+            const whereClause: Prisma.HeartsWhereInput = {
+                memberId,
+                ...(cursorId && {
+                    id: {
+                        gt: cursorId,
+                    },
+                }),
+            };
+            const heartsData = await this.prisma.hearts.findMany({
+                where: whereClause,
+                take: limit,
+                orderBy: {
+                    chargedAt: 'desc',
+                },
+            });
+            return heartsData.map(
+                (heart) =>
+                    new Heart(
+                        heart.id,
+                        heart.memberId,
+                        heart.type as 'bonus' | 'regular',
+                        heart.quantity,
+                        heart.chargedAt,
+                        heart.expiryDate,
+                    ),
+            );
+        } catch (error) {
+            throw new Error(UNEXCEPTION_ERROR);
+        }
+    }
 }

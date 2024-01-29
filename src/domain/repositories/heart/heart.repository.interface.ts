@@ -12,4 +12,9 @@ export interface HeartRepositoryInterface {
         quantity: number,
     ) => Promise<Heart>;
     readonly useHearts: (memberId: string, quantity: number) => Promise<void>;
+    readonly getHeartRechargeHistory: (
+        memberId: string,
+        cursorId?: string,
+        limit?: number,
+    ) => Promise<Heart[]>;
 }

@@ -25,6 +25,13 @@ describe('HeartRepository', () => {
         mockPrismaService.hearts.aggregate.mockClear();
         heartRepository = new HeartRepository(mockPrismaService);
     });
+    beforeAll(() => {
+        jest.useFakeTimers();
+        jest.setSystemTime(new Date('2024-01-29T21:17:29.488Z'));
+    });
+    afterAll(() => {
+        jest.useRealTimers();
+    });
     describe('getTotalHearts', () => {
         const memberId = 'member-id';
         it('should return total number of hearts for a given member', async () => {
@@ -231,6 +238,84 @@ describe('HeartRepository', () => {
                 });
 
             await heartRepository.useHearts(memberId, quantityToUse);
+        });
+    });
+    describe('getHeartRechargeHistory', () => {
+        const memberId = 'member-id';
+        const cursorId = 'cursor-id';
+        const limit = 10;
+
+        it('should return heart recharge history', async () => {
+            const mockHearts = [
+                {
+                    id: '1',
+                    memberId: 'member-id',
+                    type: 'bonus',
+                    quantity: 5,
+                    chargedAt: new Date('2024-01-01T00:00:00Z'),
+                    expiryDate: new Date('2024-06-01T00:00:00Z'),
+                },
+                {
+                    id: '2',
+                    memberId: 'member-id',
+                    type: 'regular',
+                    quantity: 10,
+                    chargedAt: new Date('2024-01-02T00:00:00Z'),
+                    expiryDate: null,
+                },
+            ];
+            mockPrismaService.hearts.findMany.mockResolvedValue(mockHearts);
+            const result = await heartRepository.getHeartRechargeHistory(
+                memberId,
+                cursorId,
+                limit,
+            );
+            expect(result).toEqual(
+                mockHearts.map(
+                    (heart) =>
+                        new Heart(
+                            heart.id,
+                            heart.memberId,
+                            heart.type as 'regular' | 'bonus',
+                            heart.quantity,
+                            heart.chargedAt,
+                            heart.expiryDate,
+                        ),
+                ),
+            );
+            expect(mockPrismaService.hearts.findMany).toHaveBeenCalledWith({
+                where: {
+                    memberId,
+                    id: {
+                        gt: cursorId,
+                    },
+                },
+                take: 10,
+                orderBy: {
+                    chargedAt: 'desc',
+                },
+            });
+        });
+        it('should handle empty recharge history', async () => {
+            mockPrismaService.hearts.findMany.mockResolvedValue([]);
+            const result = await heartRepository.getHeartRechargeHistory(
+                memberId,
+                cursorId,
+                limit,
+            );
+            expect(result).toEqual([]);
+        });
+        it('should throw an error on database failure', async () => {
+            mockPrismaService.hearts.findMany.mockRejectedValue(
+                new Error(UNEXCEPTION_ERROR),
+            );
+            await expect(
+                heartRepository.getHeartRechargeHistory(
+                    memberId,
+                    cursorId,
+                    limit,
+                ),
+            ).rejects.toThrow(UNEXCEPTION_ERROR);
         });
     });
 });
