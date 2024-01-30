@@ -11,7 +11,6 @@ import {
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MemberJoinDto } from '../dtos/member/member.join.dto';
 import { EXIST_EMAIL } from '@/common/constants/exist';
-import { MemberJoinInterceptor } from '../interceptor/member.join.interceptor';
 
 @Controller('members')
 @ApiTags('Members')
@@ -21,7 +20,6 @@ export class MemberHandler {
         private readonly service: MemberServiceInterface,
     ) {}
     @Post()
-    @UseInterceptors(new MemberJoinInterceptor())
     @ApiOperation({ summary: 'create a new member' })
     @ApiConsumes('application/x-www-form-urlencoded')
     @ApiBody({ type: MemberJoinDto })

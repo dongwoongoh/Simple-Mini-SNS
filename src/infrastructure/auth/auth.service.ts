@@ -3,7 +3,6 @@ import { NOT_MATHCED_PASSWORD } from '@/common/constants/match';
 import { MemberRepositoryInterface } from '@/domain/repositories/member/member.repository.interface';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class AuthService {
@@ -16,8 +15,7 @@ export class AuthService {
     public async signIn(email: string, password: string) {
         const member = await this.repository.find(email);
         if (member) {
-            const match = await bcrypt.compare(password, member.data.password);
-            if (match) {
+            if (password === member.data.password) {
                 const { password, ...result } = member.data;
                 return {
                     member: result,

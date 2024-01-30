@@ -7,7 +7,6 @@ import { Member } from '@/domain/entities/member';
 import { NOT_EXIST_MEMBER } from '@/common/constants/exist';
 import { NOT_MATHCED_PASSWORD } from '@/common/constants/match';
 
-jest.mock('bcrypt');
 describe('AuthService', () => {
     let service: AuthService;
     let mockMemberRepository: MemberRepositoryInterface;
@@ -37,13 +36,9 @@ describe('AuthService', () => {
     describe('signIn', () => {
         const email = 'test@example.com';
         const password = 'password123';
-        const hashedPassword = 'hashed_password';
-        const member = new Member('1', email, false, hashedPassword);
+        const member = new Member('1', email, false, password);
         it('should return an access token for valid credentials', async () => {
             jest.mocked(mockMemberRepository.find).mockResolvedValue(member);
-            jest.mocked(bcrypt.compare).mockImplementation(() =>
-                Promise.resolve(true),
-            );
             jest.mocked(mockJwtService.signAsync).mockResolvedValue(
                 'mock-jwt-token',
             );
@@ -56,9 +51,8 @@ describe('AuthService', () => {
             });
         });
         it('should throw an error for invalid password', async () => {
-            jest.mocked(mockMemberRepository.find).mockResolvedValue(member);
-            jest.mocked(bcrypt.compare).mockImplementation(() =>
-                Promise.resolve(false),
+            jest.mocked(mockMemberRepository.find).mockResolvedValue(
+                new Member('1', email, false, 'password'),
             );
             await expect(service.signIn(email, password)).rejects.toThrow(
                 NOT_MATHCED_PASSWORD,
